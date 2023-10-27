@@ -24,6 +24,11 @@ namespace Thread_hw
             SuspendPrime.Enabled = false;
             ResumePrime.Enabled = false;
             RestartPrime.Enabled = false;
+
+            StopFibonacci.Enabled = false;
+            SuspendFibonacci.Enabled = false;
+            ResumeFibonacci.Enabled = false;
+            RestartFibonacci.Enabled = false;
         }
 
         private void StartPrime_Click(object sender, EventArgs e)
@@ -97,13 +102,22 @@ namespace Thread_hw
         }
         private void StartFibonacci_Click(object sender, EventArgs e)
         {
+            FibonacciTextBox.Clear();
+
             ThreadStart threadStart1 = new ThreadStart(GenerateFibonacciNumbers);
             _threadFibonacciNumber = new Thread(threadStart1);
             _threadFibonacciNumber.Start();
+
+            StopFibonacci.Enabled = true;
+            SuspendFibonacci.Enabled = true;
+            RestartFibonacci.Enabled = true;
         }
         private void StopFibonacci_Click(object sender, EventArgs e)
         {
             _threadFibonacciNumber.Abort();
+
+            SuspendFibonacci.Enabled = false;
+            ResumeFibonacci.Enabled = false;
         }
         void GenerateFibonacciNumbers()
         {
@@ -125,6 +139,31 @@ namespace Thread_hw
 
                 Thread.Sleep(500);
             }
+        }
+        private void SuspendFibonacci_Click(object sender, EventArgs e)
+        {
+            _threadFibonacciNumber.Suspend();
+
+            SuspendFibonacci.Enabled = false;
+            StopFibonacci.Enabled = false;
+            RestartFibonacci.Enabled = false;
+            ResumeFibonacci.Enabled = true;
+        }
+        private void ResumeFibonacci_Click(object sender, EventArgs e)
+        {
+            _threadFibonacciNumber.Resume();
+
+            StopFibonacci.Enabled = true;
+            RestartFibonacci.Enabled = true;
+            ResumeFibonacci.Enabled = false;
+        }
+        private void RestartFibonacci_Click(object sender, EventArgs e)
+        {
+            _threadFibonacciNumber.Abort();
+
+            FibonacciTextBox.Clear();
+
+            StartFibonacci_Click(sender, e);
         }
     }
 }
