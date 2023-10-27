@@ -14,33 +14,43 @@ namespace Thread_hw
 {
     public partial class Form1 : Form
     {
-        Thread thread;
+        Thread _threadPrimeNumber;
+        Thread _threadFibonacciNumber;
         public Form1()
         {
             InitializeComponent();
+
+            StopPrime.Enabled = false;
+            SuspendPrime.Enabled = false;
+            ResumePrime.Enabled = false;
+            RestartPrime.Enabled = false;
         }
 
         private void StartPrime_Click(object sender, EventArgs e)
         {
+            PrimeNumberTextBox.Clear();
+
             ThreadStart threadStart = new ThreadStart(GeneratePrimeNumbers);
-            thread = new Thread(threadStart);
-            thread.Start();
+            _threadPrimeNumber = new Thread(threadStart);
+            _threadPrimeNumber.Start();
+
+            StopPrime.Enabled = true;
+            SuspendPrime.Enabled = true;
+            RestartPrime.Enabled = true;
         }
         void GeneratePrimeNumbers()
         {
-            string str = "";
-            int pos = 0;
-
             for (int x = (int)numericPrimeMin.Value; x < (int)numericPrimeMax.Value; x++)
             {
                 if (PrimeNumber(x))
                 {
-                    //str += x.ToString() + "\r\n";
                     PrimeNumberTextBox.AppendText(x.ToString() + "\r\n");
                 }
 
                 Thread.Sleep(500);
             }
+
+            _threadPrimeNumber.Abort();
         }
         static bool PrimeNumber(int x)
         {
@@ -53,10 +63,68 @@ namespace Thread_hw
             }
             return true;
         }
-
         private void StopPrime_Click(object sender, EventArgs e)
         {
-            thread.Abort();
+            _threadPrimeNumber.Abort();
+
+            SuspendPrime.Enabled = false;
+            ResumePrime.Enabled = false;
+        }
+        private void SuspendPrime_Click(object sender, EventArgs e)
+        {
+            _threadPrimeNumber.Suspend();
+
+            SuspendPrime.Enabled = false;
+            StopPrime.Enabled = false;
+            RestartPrime.Enabled = false;
+            ResumePrime.Enabled = true;
+        }
+        private void ResumePrime_Click(object sender, EventArgs e)
+        {
+            _threadPrimeNumber.Resume();
+
+            StopPrime.Enabled = true;
+            RestartPrime.Enabled = true;
+            ResumePrime.Enabled = false;
+        }
+        private void RestartPrime_Click(object sender, EventArgs e)
+        {
+            _threadPrimeNumber.Abort();
+
+            PrimeNumberTextBox.Clear();
+
+            StartPrime_Click(sender, e);
+        }
+        private void StartFibonacci_Click(object sender, EventArgs e)
+        {
+            ThreadStart threadStart1 = new ThreadStart(GenerateFibonacciNumbers);
+            _threadFibonacciNumber = new Thread(threadStart1);
+            _threadFibonacciNumber.Start();
+        }
+        private void StopFibonacci_Click(object sender, EventArgs e)
+        {
+            _threadFibonacciNumber.Abort();
+        }
+        void GenerateFibonacciNumbers()
+        {
+            ulong num1 = 1;
+            ulong num2 = 1;
+            ulong res = 0;
+
+            FibonacciTextBox.AppendText(num1.ToString() + "\r\n");
+            FibonacciTextBox.AppendText(num2.ToString() + "\r\n");
+
+            while (true)
+            {
+                res = num1 + num2;
+
+                FibonacciTextBox.AppendText(res.ToString() + "\r\n");
+
+                num1 = num2;
+                num2 = res;
+
+                Thread.Sleep(500);
+            }
         }
     }
 }
